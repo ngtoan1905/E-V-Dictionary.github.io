@@ -27,7 +27,7 @@ static void search(GtkWidget *w, gpointer data);
 //Phần 2 Insert word
 void insert_word(GtkWidget widget, gpointer window);
 void add(GtkWidget *w, gpointer data);
-void edit(GtkWidget *widget,gpointer data);
+static void edit(GtkWidget *widget,gpointer data);
 //Phần 3 Delete word
 void delete_word(GtkWidget widget, gpointer window);
 void delete_word_controller(GtkWidget *w, gpointer data);
@@ -653,44 +653,42 @@ void add(GtkWidget *w, gpointer data)
 	}
 	return;
 }
-void edit(GtkWidget *widget,gpointer data){
+static void edit(GtkWidget *widget,gpointer data){
 	GtkWidget *entry_search = ((GtkWidget **)data)[0];
 	GtkWidget *window1 = ((GtkWidget **)data)[1];
 	GtkWidget *edit_view = ((GtkWidget **)data)[2];
 	const gchar *a;
 	GtkTextIter start, end;
-	GtkTextBuffer *buffer = gtk_text_view_get_buffer (edit_view);
+	GtkTextBuffer *buffer = gtk_text_view_get_buffer(edit_view);
 	const gchar *b;
 	char word[50];
 	char mean[10000];
 	char tmpMean[10000];
-	char tmpWord[50];
 	int size;
+
 	a = gtk_entry_get_text(GTK_ENTRY(entry_search));
 	g_print("%s",a);
 	strcpy(word,a);
+
 	gtk_text_buffer_get_bounds (buffer, &start, &end);
 	b = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
 	g_print("%s",b);
 	strcpy(mean,b);
-	if(strlen(word) == 0&&strlen(mean)==0){
+
+	if(strlen(word) == 0 && strlen(mean) == 0){
 		Show_message(GTK_WINDOW(window1),GTK_MESSAGE_WARNING,"Cảnh báo","Tìm kiếm trước khi chỉnh sửa.");
 		return;
 	}
-	gtk_text_buffer_get_bounds (buffer, &start, &end);
-	b = gtk_text_buffer_get_text (buffer, &start, &end, FALSE);
-	strcpy(tmpMean,b);
-	a = gtk_entry_get_text(GTK_ENTRY(entry_search));
-	strcpy(tmpWord,a);
-	if(strlen(word) == 0||strlen(mean) == 0){
+
+	if(strlen(word) == 0 || strlen(mean) == 0){
 		Show_message(GTK_WINDOW(window1), GTK_MESSAGE_WARNING,"Cảnh báo","Bạn đang bỏ trống một phần xin vui lòng điền đủ.");
-	}else if (btsel(book, word, mean, 100000, &size) != 0)
+	}else if (btsel(book, word, tmpMean, 100000, &size) != 0)
 	{
 		Show_message(GTK_WINDOW(window1),GTK_MESSAGE_WARNING,"Cảnh báo","Từ cần chỉnh sửa không có trong từ điển.\n Nếu muốn thêm từ mới xin vui lòng chọn Insert Word.\n");
 	}else{
-		if(strcmp(tmpMean,mean) == 0 && strcmp(tmpWord,word) == 0){
+		if(strcmp(tmpMean,mean) == 0){
 			Show_message(GTK_WINDOW(window1),GTK_MESSAGE_INFO,"Thông Báo","Không có sự thay đổi nào.");
-		}else if( btupd(book, word, tmpMean, strlen(mean) + 1)==1)
+		}else if( btupd(book, word, mean, strlen(mean) + 1)==1)
 			Show_message(GTK_WINDOW(window1),GTK_MESSAGE_ERROR, "Xảy ra lỗi!","Không thể cập nhật từ.");
 		else
 			Show_message(GTK_WINDOW(window1),GTK_MESSAGE_INFO, "Thành công!","Đã cập nhật từ.");
